@@ -16,8 +16,17 @@ export class RegisterDto {
   @Field()
   @IsNotEmpty({ message: 'Password is required' })
   password: string;
+
+  @Field()
+  @IsNotEmpty({ message: 'Password is required' })
+  phone_number: number;
+
+  //   @Field()
+  //   @IsNotEmpty({ message: 'Password is required' })
+  //   address: string;
 }
 
+@InputType()
 export class LoginDto {
   @Field()
   @IsEmail({}, { message: 'Must be a valid email' })
@@ -27,4 +36,15 @@ export class LoginDto {
   @Field()
   @IsNotEmpty({ message: 'Password is required' })
   password: string;
+}
+
+@InputType()
+export class ActivationDto {
+  @Field()
+  @IsNotEmpty({ message: 'ActivationToken is required' })
+  activationToken: string;
+
+  @Field()
+  @IsNotEmpty({ message: 'ActivationCode is required' })
+  activationCode: string;
 }
