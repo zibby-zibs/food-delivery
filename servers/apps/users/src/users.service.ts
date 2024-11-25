@@ -1,12 +1,19 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService, JwtVerifyOptions } from '@nestjs/jwt';
-import { ActivationDto, LoginDto, RegisterDto } from './dto/user.dto';
+import {
+  ActivationDto,
+  ForgotDto,
+  LoginDto,
+  RegisterDto,
+  ResetPasswordDto,
+} from './dto/user.dto';
 import { Response } from 'express';
 import { PrismaService } from './prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
 import { EmailService } from './email/email.service';
 import { TokenSender } from './utils/sendToken';
+import { User } from '@prisma/client';
 
 interface UserData {
   name: string;
@@ -53,6 +60,8 @@ export class UsersService {
 
     const activationCode = activationToken.activationCode;
 
+    console.log({ activationToken });
+
     await this.emailService.sendMail({
       email,
       subject: 'Activate your Tasty Account',
@@ -82,7 +91,7 @@ export class UsersService {
     return { token, activationCode };
   }
 
-  async activateUser(activationDto: ActivationDto, response: Response) {
+  async activateUser(activationDto: ActivationDto) {
     const { activationCode, activationToken } = activationDto;
 
     const newUser: { user: UserData; activationCode: string } =
@@ -113,7 +122,7 @@ export class UsersService {
       },
     });
 
-    return { user, response };
+    return user;
   }
 
   async login(loginDto: LoginDto) {
@@ -136,7 +145,6 @@ export class UsersService {
       };
 
     const comparePassword = await bcrypt.compare(password, user.password);
-    console.log({ password, userPass: user.password, comparePassword });
 
     if (!comparePassword)
       return {
@@ -152,9 +160,79 @@ export class UsersService {
     return tokenSender.sendToken(user);
   }
 
+  async getLoggedInUser(req: any) {
+    const user = req.user;
+    // const refreshtoken = req.headers.refreshtoken;
+    // const accesstoken = req.headers.accesstoken;
+
+    // console.log({ user, accesstoken, refreshtoken });
+
+    return user;
+  }
+
   async getUsers() {
     const users = await this.prisma.user.findMany();
 
     return users;
+  }
+
+  private async generatePasswordLink(user: User) {
+    const forgotPasswordToken = this.jwtService.sign(
+      {
+        user,
+      },
+      {
+        secret: this.configService.get('FORGOT_PASSWORD_TOKEN'),
+        expiresIn: '5m',
+      },
+    );
+
+    return forgotPasswordToken;
+  }
+
+  async forgotPassword({ email }: ForgotDto) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    const forgotPasswordToken = await this.generatePasswordLink(user);
+
+    const resetPasswordUrl =
+      this.configService.get('CLIENT_SIDE_URL') +
+      `/reset-password?verify=${forgotPasswordToken}`;
+    await this.emailService.sendMail({
+      email,
+      subject: 'Reset your password!',
+      template: './forgot-password',
+      name: user?.name,
+      activationCode: resetPasswordUrl,
+    });
+
+    return { message: 'Your forgot password link was sent to your mail' };
+  }
+
+  async resetPassword(resetPassword: ResetPasswordDto) {
+    const { activationToken, password } = resetPassword;
+
+    const decoded = await this.jwtService.decode(activationToken);
+
+    if (!decoded || decoded?.exp * 1000 < Date.now()) {
+      throw new BadRequestException('Invalid token');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await this.prisma.user.update({
+      where: {
+        id: decoded.user.id,
+      },
+      data: {
+        password: hashedPassword,
+      },
+    });
+
+    return { user };
   }
 }

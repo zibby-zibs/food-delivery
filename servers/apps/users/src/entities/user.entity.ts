@@ -28,4 +28,10 @@ export class User {
 
   @Field()
   password: string;
+
+  @Field()
+  phone_number: number;
+
+  @Field({ nullable: true })
+  address?: string;
 }
