@@ -84,7 +84,7 @@ export class UsersService {
       },
       {
         secret: this.configService.get<string>('ACTIVATION_SECRET'),
-        expiresIn: '3600m',
+        expiresIn: '30m',
       },
     );
 

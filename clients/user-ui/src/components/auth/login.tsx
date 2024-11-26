@@ -23,6 +23,7 @@ import { LOGIN_USER } from "@/graphql/actions/login.action";
 import { useUserStore } from "@/store/auth/user";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 type Props = {
   setAuthState: React.Dispatch<
@@ -41,6 +42,7 @@ type LoginSchema = z.infer<typeof formSchema>;
 const Login = ({ setAuthState, setOpen }: Props) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginUserQuery, { loading }] = useMutation(LOGIN_USER);
+
   const { setUser } = useUserStore();
 
   const form = useForm<LoginSchema>({

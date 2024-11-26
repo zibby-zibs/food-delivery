@@ -17,7 +17,24 @@ datasource db {
 enum Role {
   Admin
   User
+  restaurant
 }
+
+enum FoodCategory {
+  traditional
+  snacks
+  grilledAndBarbecue
+  swallowsAndSoups
+  continental
+  fastFoods
+  breakfast
+  vegetarianAndHealthy
+  drinksAndBeverages
+  streetFoods
+  seafood
+  desserts
+}
+
 
 model Avatars {
   id String @id @default(auto()) @map("_id") @db.ObjectId
@@ -37,6 +54,58 @@ model User {
   role Role @default(User)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Restaurant {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  address     String
+  phone       String?
+  email       String?      @unique
+  website     String?
+  rating      Float?       @default(0)
+  deliveryFee Float?       @default(0)
+  openHours   String?      // e.g., "Mon-Fri 9:00-22:00"
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  menuItems   MenuItem[]   @relation("RestaurantMenu")
+  categories  Category[]    @relation("RestaurantCategories")
+}
+
+model MenuItem {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  price       Float
+  imageUrl    String?
+  restaurant  Restaurant   @relation("RestaurantMenu", fields: [restaurantId], references: [id])
+  restaurantId String       @db.ObjectId
+  categories   MenuItemCategory[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Category {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  type        FoodCategory
+  description String?
+  menuItems   MenuItemCategory[]
+  restaurants Restaurant @relation("RestaurantCategories", fields: [restaurantId], references: [id] )
+  restaurantId String @db.ObjectId 
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model MenuItemCategory {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  menuItemId  String @db.ObjectId
+  categoryId  String @db.ObjectId
+  menuItem    MenuItem @relation(fields: [menuItemId], references: [id])
+  category    Category @relation(fields: [categoryId], references: [id])
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 //name, eail, pasword, avatar, role, phone, address

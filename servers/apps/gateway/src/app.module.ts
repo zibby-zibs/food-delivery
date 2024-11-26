@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { ApolloGatewayDriver, ApolloGatewayDriverConfig } from '@Nestjs/apollo';
 import { IntrospectAndCompose } from '@apollo/gateway';
 import { GraphQLModule } from '@nestjs/graphql';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from 'apps/users/src/guards/auth.guard';
 
 @Module({
   imports: [
@@ -11,12 +13,27 @@ import { GraphQLModule } from '@nestjs/graphql';
       driver: ApolloGatewayDriver,
       gateway: {
         supergraphSdl: new IntrospectAndCompose({
-          subgraphs: [],
+          subgraphs: [
+            {
+              name: 'users',
+              url: 'http://localhost:3005/graphql',
+            },
+            {
+              name: 'restaurants',
+              url: 'http://localhost:3006/graphql',
+            },
+          ],
         }),
       },
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
 })
 export class AppModule {}

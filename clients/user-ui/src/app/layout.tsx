@@ -3,10 +3,16 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ApolloClientProvider } from "@/lib/apollo-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { NextAuthProvider } from "@/lib/next-auth-provider";
 
 const kholic = localFont({
   src: "../assets/fonts/kholic.otf",
   variable: "--font-kholic",
+  weight: "100 900",
+});
+const rafisqi = localFont({
+  src: "../assets/fonts/Rafisqi Bold.ttf",
+  variable: "--font-rafisqi",
   weight: "100 900",
 });
 
@@ -22,14 +28,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <ApolloClientProvider>
-        <body
-          className={`${kholic.variable} antialiased font-Noto-Sans text-white`}
-        >
-          {children}
-          <Toaster richColors />
-        </body>
-      </ApolloClientProvider>
+      <NextAuthProvider>
+        <ApolloClientProvider>
+          <body
+            className={`${kholic.variable} ${rafisqi.variable} antialiased font-Noto-Sans text-white`}
+          >
+            {children}
+            <Toaster richColors />
+          </body>
+        </ApolloClientProvider>
+      </NextAuthProvider>
     </html>
   );
 }

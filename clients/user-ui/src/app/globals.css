@@ -11,7 +11,8 @@ body {
 @layer base {
   :root {
     /* Base Colors */
-    --background: 220 15% 15%; /* Dark Navy Blue */
+    --background: 220 15% 15%;
+    /* --background: 0 0% 100%; */
     --foreground: 0 0% 100%; /* White */
     --muted: 220 10% 35%; /* Muted Dark Blue */
     --accent: 220 90% 40%; /* Vibrant Blue */
@@ -43,6 +44,22 @@ body {
     --border-hover: 220 10% 35%; /* Hovered Border */
 
     --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
@@ -75,6 +92,22 @@ body {
     --ring: 24 100% 50%;
 
     --radius: 0.5rem;
+
+    --sidebar-background: 240 5.9% 10%;
+
+    --sidebar-foreground: 240 4.8% 95.9%;
+
+    --sidebar-primary: 224.3 76.3% 48%;
+
+    --sidebar-primary-foreground: 0 0% 100%;
+
+    --sidebar-accent: 240 3.7% 15.9%;
+
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+
+    --sidebar-border: 240 3.7% 15.9%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 @layer base {
@@ -84,4 +117,22 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@keyframes wave {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+.wave1 {
+  animation: wave 7s linear infinite;
+}
+.wave2 {
+  animation: wave 10s linear infinite;
+}
+.wave3 {
+  animation: wave 13s linear infinite;
 }

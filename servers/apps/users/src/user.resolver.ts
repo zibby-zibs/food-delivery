@@ -1,4 +1,11 @@
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Context,
+  Mutation,
+  Query,
+  Resolver,
+  ResolveReference,
+} from '@nestjs/graphql';
 import { UsersService } from './users.service';
 import {
   ActivationResponse,
@@ -23,6 +30,7 @@ import {
 } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { AuthGuard } from './guards/auth.guard';
+import { Roles } from 'apps/lib/decorators/roles.decorator';
 
 @Resolver('Users')
 export class UsersResolver {
@@ -66,7 +74,7 @@ export class UsersResolver {
   }
 
   @Query(() => LoginResponse)
-  @UseGuards(AuthGuard)
+  @Roles('User', 'restaurant')
   async getLoggedInUser(@Context() context): Promise<LoginResponse> {
     const user = context.req.user;
 
