@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { ApolloClientProvider } from "@/lib/apollo-provider";
+import { ApolloWrapper } from "@/lib/apollo-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { NextAuthProvider } from "@/lib/next-auth-provider";
 
@@ -29,14 +29,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <NextAuthProvider>
-        <ApolloClientProvider>
+        <ApolloWrapper>
           <body
             className={`${kholic.variable} ${rafisqi.variable} antialiased font-Noto-Sans text-white`}
           >
             {children}
             <Toaster richColors />
           </body>
-        </ApolloClientProvider>
+        </ApolloWrapper>
       </NextAuthProvider>
     </html>
   );

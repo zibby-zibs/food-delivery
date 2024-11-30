@@ -21,17 +21,17 @@ const ProfileDropdown = () => {
   const router = useRouter();
   const [signedIn, setSignedIn] = useState(false);
   const [open, setOpen] = useState(false);
-  const { loading, user } = useUser();
+  const { user, isUser, isRestaurant } = useUser();
   const { data } = useSession();
 
   useEffect(() => {
-    if (!loading) setSignedIn(!!user);
+    setSignedIn(!!user);
 
     if (data?.user) {
       setSignedIn(true);
       addUser(user);
     }
-  }, [loading, user, data]);
+  }, [user, data]);
 
   const handleLogout = () => {
     Cookie.remove("access_token");
@@ -48,6 +48,7 @@ const ProfileDropdown = () => {
       console.log(error);
     }
   };
+
   return (
     <div className="flex items-center gap-4">
       {signedIn ? (
@@ -59,12 +60,20 @@ const ProfileDropdown = () => {
                   src={
                     data?.user
                       ? data?.user?.image || ""
-                      : user?.user?.avatar?.url || ""
+                      : isUser(user)
+                      ? user.avatar?.url || ""
+                      : ""
                   }
                 />
                 <AvatarFallback className="text-white border-2 border-primary">
                   {signedIn ? (
-                    <div>{user?.user?.name?.charAt(0)}</div>
+                    <div>
+                      {isUser(user)
+                        ? user.name.charAt(0)
+                        : isRestaurant(user)
+                        ? user.name.charAt(0)
+                        : ""}
+                    </div>
                   ) : (
                     <div>
                       <LucideCircleUserRound />
@@ -78,12 +87,30 @@ const ProfileDropdown = () => {
             <DropdownMenuItem className="flex flex-col gap-2">
               <p className="font-semibold">Signed In as </p>
               <p className="font-semibold">
-                {data?.user ? data?.user?.email : user?.user?.email}
+                {data?.user
+                  ? data?.user?.email
+                  : isUser(user)
+                  ? user.email
+                  : isRestaurant(user)
+                  ? user.email
+                  : ""}
               </p>
             </DropdownMenuItem>
-            <DropdownMenuItem>My profile</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                if (isUser(user)) {
+                  router.push("/profile");
+                } else {
+                  router.push("admin/restaurants");
+                }
+              }}
+            >
+              My profile
+            </DropdownMenuItem>
             <DropdownMenuItem className="">All Orders</DropdownMenuItem>
-            <DropdownMenuItem>Apply for sellers account</DropdownMenuItem>
+            {isUser(user) && (
+              <DropdownMenuItem>Apply for sellers account</DropdownMenuItem>
+            )}
             <DropdownMenuItem
               className="hover:bg-red-500 bg-red-500  text-white"
               onClick={() => signOut() || handleLogout()}

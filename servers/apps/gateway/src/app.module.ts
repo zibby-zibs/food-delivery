@@ -4,8 +4,6 @@ import { AppService } from './app.service';
 import { ApolloGatewayDriver, ApolloGatewayDriverConfig } from '@Nestjs/apollo';
 import { IntrospectAndCompose } from '@apollo/gateway';
 import { GraphQLModule } from '@nestjs/graphql';
-import { APP_GUARD } from '@nestjs/core';
-import { AuthGuard } from 'apps/users/src/guards/auth.guard';
 
 @Module({
   imports: [
@@ -24,16 +22,12 @@ import { AuthGuard } from 'apps/users/src/guards/auth.guard';
             },
           ],
         }),
+        pollIntervalInMs: 5000,
+        fallbackPollIntervalInMs: 1000,
       },
     }),
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
-  ],
+  providers: [AppService],
 })
 export class AppModule {}

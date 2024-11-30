@@ -1,3 +1,4 @@
+import { Restaurant } from "@prisma/client";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -13,6 +14,11 @@ interface UserStore {
   logout: () => void;
   setUser: (user: User) => void;
 }
+interface RestaurantStore {
+  restaurant: Restaurant | null;
+  logout: () => void;
+  setRestaurant: (restaurant: Restaurant) => void;
+}
 
 export const useUserStore = create<UserStore>()(
   persist(
@@ -22,5 +28,16 @@ export const useUserStore = create<UserStore>()(
       logout: () => set({ user: null }),
     }),
     { name: "user-store" }
+  )
+);
+
+export const useRestaurantStore = create<RestaurantStore>()(
+  persist(
+    (set) => ({
+      restaurant: null,
+      setRestaurant: (restaurant) => set({ restaurant: restaurant }),
+      logout: () => set({ restaurant: null }),
+    }),
+    { name: "restaurant-store" }
   )
 );

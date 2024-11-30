@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
       {
         hostname: "img.freepik.com",
       },
+      {
+        hostname: "res.cloudinary.com",
+      },
     ],
   },
 };

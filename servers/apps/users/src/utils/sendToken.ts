@@ -12,6 +12,7 @@ export class TokenSender {
     const accessToken = this.jwt.sign(
       {
         id: user.id,
+        type: user.role,
       },
       {
         secret: this.config.get('ACCESS_TOKEN_SECRET'),
@@ -22,6 +23,7 @@ export class TokenSender {
     const refreshToken = this.jwt.sign(
       {
         id: user.id,
+        type: user.role,
       },
       {
         secret: this.config.get('REFRESH_TOKEN_SECRET'),

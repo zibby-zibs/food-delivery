@@ -23,18 +23,21 @@ import {
   ResetPasswordDto,
 } from './dto/user.dto';
 import { Response } from 'express';
-import {
-  BadRequestException,
-  UseGuards,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { User } from './entities/user.entity';
-import { AuthGuard } from './guards/auth.guard';
+
 import { Roles } from 'apps/lib/decorators/roles.decorator';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { Role } from '@prisma/client';
 
 @Resolver('Users')
 export class UsersResolver {
-  constructor(private readonly userService: UsersService) {}
+  constructor(
+    private readonly userService: UsersService,
+    private readonly jwt: JwtService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Mutation(() => RegisterResponse)
   async register(
@@ -66,31 +69,26 @@ export class UsersResolver {
   async login(@Args('loginDto') loginDto: LoginDto): Promise<LoginResponse> {
     const { email, password } = loginDto;
 
-    console.log({ email });
     const user = await this.userService.login({ email, password });
 
-    // console.log({ user });
     return user;
   }
 
   @Query(() => LoginResponse)
   @Roles('User', 'restaurant')
   async getLoggedInUser(@Context() context): Promise<LoginResponse> {
-    const user = context.req.user;
-
-    if (!user) {
-      throw new UnauthorizedException('User not authenticated');
-    }
-
-    const accessToken = context.req.headers.accesstoken;
-    const refreshToken = context.req.headers.refreshtoken;
+    const accessToken = context.req.headers.accesstoken?.split(
+      'Bearer ',
+    )[1] as string;
+    console.log({ accessToken });
+    const refreshToken = context.req.headers.refreshToken;
 
     // console.log({ user, accessToken, refreshToken });
 
     if (!accessToken) {
       throw new Error('Access token is missing');
     }
-
+    const user = context.req.user;
     return {
       user,
       accessToken,

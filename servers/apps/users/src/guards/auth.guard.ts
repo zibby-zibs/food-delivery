@@ -24,15 +24,17 @@ export class AuthGuard implements CanActivate {
     const gqlContext = GqlExecutionContext.create(context);
     const { req } = gqlContext.getContext();
 
-    const accessToken = req.headers.accessToken?.split('Bearer ')[1] as string;
+    // console.log({ req });
+
+    const accessToken = req.headers?.accesstoken?.split('Bearer ')[1] as string;
+
     // const refreshToken = req.headers.refreshtoken as string;
     const roles = this.reflector.get<Role[]>('roles', context.getHandler());
 
-    if (!accessToken) {
-      throw new UnauthorizedException('Please login ');
-    }
-
     if (roles?.length) {
+      if (!accessToken) {
+        throw new UnauthorizedException('Please login ');
+      }
       try {
         if (accessToken) {
           const decoded = this.jwtService.verify(accessToken, {

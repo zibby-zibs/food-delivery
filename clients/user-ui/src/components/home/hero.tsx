@@ -1,8 +1,18 @@
 "use client";
 
 import { Button } from "../ui/button";
+import { useState } from "react";
+import { Dialog, DialogContent } from "../ui/dialog";
+import { RestaurantSignupForm } from "@/app/admin/restaurants/store/add-new-product/_components/forms/register-restaurant";
+import Verify from "@/app/admin/restaurants/_components/verifying-code";
+import useUser from "@/hooks/useUser";
 
 export default function Hero() {
+  const [openRestaurantRegister, setOpenRestaurantRegister] = useState(false);
+  const [authState, setAuthState] = useState<"register" | "verifying">(
+    "register"
+  );
+  const { isRestaurant, user } = useUser();
   return (
     <div className="relative min-h-[calc(100dvh-80px)] bg-[#1E1B4B] overflow-hidden ">
       <div className="absolute inset-0 w-full h-full">
@@ -43,9 +53,15 @@ export default function Hero() {
             <Button className="px-6 py-3 bg-[#FF8A00] text-white rounded-full hover:bg-[#FF8A00]/90 transition-colors">
               Order now
             </Button>
-            <Button className="px-6 py-3 bg-[#4CAF50] text-white rounded-full hover:bg-[#4CAF50]/90 transition-colors">
-              Register Restaurant
-            </Button>
+
+            {!user || (user && !isRestaurant(user)) ? (
+              <Button
+                onClick={() => setOpenRestaurantRegister(true)}
+                className="px-6 py-3 bg-[#4CAF50] text-white rounded-full hover:bg-[#4CAF50]/90 transition-colors"
+              >
+                Register Restaurant
+              </Button>
+            ) : null}
           </div>
         </article>
 
@@ -117,6 +133,20 @@ export default function Hero() {
           </div>
         </div> */}
       </div>
+
+      <Dialog
+        open={openRestaurantRegister}
+        onOpenChange={setOpenRestaurantRegister}
+      >
+        <DialogContent>
+          {authState === "register" && (
+            <RestaurantSignupForm setAuthState={setAuthState} />
+          )}
+          {authState === "verifying" && (
+            <Verify setOpen={setOpenRestaurantRegister} />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -19,25 +19,25 @@ export function PopularDishes() {
     {
       name: "Margherita Pizza",
       orders: 145,
-      revenue: "£1,450",
+      revenue: "\u20A6 1,450",
       trend: 23,
     },
     {
       name: "Pasta Carbonara",
       orders: 132,
-      revenue: "£1,320",
+      revenue: "\u20A6 1,320",
       trend: 18,
     },
     {
       name: "Tiramisu",
       orders: 97,
-      revenue: "£679",
+      revenue: "\u20A6 679",
       trend: 12,
     },
     {
       name: "Caesar Salad",
       orders: 89,
-      revenue: "£623",
+      revenue: "\u20A6 623",
       trend: -5,
     },
   ];

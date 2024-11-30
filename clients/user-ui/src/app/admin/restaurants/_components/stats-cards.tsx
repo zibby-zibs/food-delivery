@@ -20,7 +20,7 @@ export function StatsCards() {
   const stats: Stat[] = [
     {
       title: "Total Revenue",
-      value: "£2,389.50",
+      value: `\u20A6 2,389.50`,
       description: "Daily revenue",
       trend: 12.5,
       icon: <DollarSign className="h-4 w-4 text-muted-foreground" />,

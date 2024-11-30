@@ -1,13 +1,13 @@
+import { ApolloLink, createHttpLink } from "@apollo/client";
 import {
+  registerApolloClient,
   ApolloClient,
-  ApolloLink,
-  createHttpLink,
   InMemoryCache,
-} from "@apollo/client";
+} from "@apollo/experimental-nextjs-app-support";
 import Cookies from "js-cookie";
 
 const httpLink = createHttpLink({
-  uri: "http://localhost:3005/graphql",
+  uri: "http://localhost:3010/graphql",
 });
 const authMiddleware = new ApolloLink((operation, forward) => {
   operation.setContext({
@@ -20,7 +20,9 @@ const authMiddleware = new ApolloLink((operation, forward) => {
   return forward(operation);
 });
 
-export const graphqlClient = new ApolloClient({
-  link: authMiddleware.concat(httpLink),
-  cache: new InMemoryCache(),
+export const { getClient, query, PreloadQuery } = registerApolloClient(() => {
+  return new ApolloClient({
+    link: authMiddleware.concat(httpLink),
+    cache: new InMemoryCache(),
+  });
 });
